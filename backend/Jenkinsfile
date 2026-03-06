@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Setup Environment') {
+            steps {
+                dir('backend') {
+                    sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                dir('backend') {
+                    sh '''
+                    sudo pm2 describe flask-backend > /dev/null
+                    if [ $? -eq 0 ]; then
+                      sudo pm2 restart flask-backend
+                    else
+                      sudo pm2 start app.py --name "flask-backend" --interpreter ./venv/bin/python3
+                    fi
+                    '''
+                }
+            }
+        }
+    }
+}

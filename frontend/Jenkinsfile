@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'node20' 
+    }
+
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                dir('frontend') {
+                    sh '''
+                    sudo pm2 describe express-frontend > /dev/null
+                    if [ $? -eq 0 ]; then
+                      sudo pm2 restart express-frontend
+                    else
+                      sudo pm2 start index.js --name "express-frontend"
+                    fi
+                    '''
+                }
+            }
+        }
+    }
+}
