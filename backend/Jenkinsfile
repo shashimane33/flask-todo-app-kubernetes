@@ -18,12 +18,18 @@ pipeline {
             steps {
                 dir('backend') {
                     sh '''
-                    sudo -u ubuntu pm2 describe flask-backend > /dev/null
-                    if [ $? -eq 0 ]; then
-                      sudo -u ubuntu pm2 restart flask-backend
-                    else
-                      sudo -u ubuntu pm2 start app.py --name "flask-backend" --interpreter ./venv/bin/python3
-                    fi
+                    CURRENT_DIR=$(pwd)
+                    echo $pwd
+                    
+                    sudo chmod -R 755 .
+
+                    sudo -u ubuntu pm2 delete flask-backend || true
+
+                    sudo -u ubuntu pm2 start ${CURRENT_DIR}/app.py \
+                        --name "flask-backend" \
+                        --interpreter ${CURRENT_DIR}/venv/bin/python3
+
+                    sudo -u ubuntu pm2 list
                     '''
                 }
             }
