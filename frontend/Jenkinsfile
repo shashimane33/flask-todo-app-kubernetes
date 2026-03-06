@@ -18,9 +18,12 @@ pipeline {
             steps {
                 dir('frontend') {
                     sh '''
-                    sudo -u ubuntu pm2 delete express-frontend || true
-                    sudo -u ubuntu pm2 start index.js --name "express-frontend"
-                    sudo -u ubuntu pm2 save
+                    sudo -u ubuntu pm2 describe express-frontend > /dev/null
+                    if [ $? -eq 0 ]; then
+                      sudo -u ubuntu pm2 restart express-frontend
+                    else
+                      sudo -u ubuntu pm2 start index.js --name "express-frontend"
+                    fi
                     '''
                 }
             }
