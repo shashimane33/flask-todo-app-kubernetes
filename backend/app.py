@@ -14,6 +14,10 @@ def write_tasks(tasks):
     with open(DATA_FILE, "w") as f:
         json.dump(tasks, f, indent=2, ensure_ascii=False)
 
+@app.route('/', method=['GET'])
+def backendLive():
+    return "Backend is LIVE..!!"
+
 @app.route('/task', methods=['GET'])
 def showTasks():
     tasks = read_tasks()
